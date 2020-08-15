@@ -4,6 +4,8 @@ package keys
 type ContextKey string
 
 var (
-	// LogLevel is the key to use to store/retrieve the log level from the context
+	// LogLevel is the key to use for the log level
 	LogLevel ContextKey = "log-level"
+	// SportsDB is the key to use for the sports db api key
+	SportsDB ContextKey = "sports-db"
 )
