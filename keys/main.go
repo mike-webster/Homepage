@@ -6,7 +6,6 @@ type ContextKey string
 var (
 	// LogLevel is the key to use for the log level
 	LogLevel ContextKey = "log-level"
-
-	// SportsDB is the key to use for the sports db api key
+	// SportsDB is the key to use for the sportsdb api
 	SportsDB ContextKey = "sports-db"
 )

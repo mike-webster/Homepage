@@ -8,66 +8,74 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/mike-webster/homepage/keys"
+	"homepage/keys"
 )
 
 // GetNext5Events will retrieve the next 5 events for the team with the matching id
-func GetNext5Events(ctx context.Context, id string) interface{} {
+func GetNext5Events(ctx context.Context, id string) (*[]Event, error) {
 	key := ctx.Value(keys.SportsDB)
 	if key == nil {
-		return errors.New("not api key")
+		return nil, errors.New("not api key")
 	}
 
 	url := fmt.Sprintf("https://www.thesportsdb.com/api/v1/json/1/eventsnext.php?id=%v", id)
 	resp, err := http.Get(url)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if resp.StatusCode != 200 {
-		return errors.New("non-200")
+		return nil, errors.New("non-200")
 	}
 
-	return errors.New("TODO: Finish func")
+	ret := respEvents{}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(body, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(ret.Events) < 1 {
+		return nil, errors.New("no events returned")
+	}
+
+	return &ret.Events, nil
 }
 
-func GetTeamByName(ctx context.Context, name string) interface{} {
+func GetTeamByName(ctx context.Context, name string) (*Team, error) {
 	key := ctx.Value(keys.SportsDB)
 	if key == nil {
-		return errors.New("not api key")
+		return nil, errors.New("not api key")
 	}
 
 	url := fmt.Sprintf("https://www.thesportsdb.com/api/v1/json/1/searchteams.php?t=%v", name)
 	res, err := http.Get(url)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if res.StatusCode != 200 {
-		return errors.New("non-200")
-	}
-
-	type resp struct {
-		Teams []struct {
-			ID   string `json:"idTeam"`
-			Name string `json:"strName"`
-		} `json:"teams"`
+		return nil, errors.New("non-200")
 	}
 
 	ret := resp{}
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = json.Unmarshal(body, &ret)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if len(ret.Teams) < 1 {
-		return nil
+		return nil, errors.New("no teams returned")
 	}
 
-	return &ret.Teams[0]
+	return &ret.Teams[0], nil
 }
