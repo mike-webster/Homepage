@@ -1,0 +1,18 @@
+default: &default
+  port: "3999"
+  teams:
+    - "chelsea"
+    - "milwaukee brewers"
+    - "green bay packers"
+    - "milwaukee bucks"
+    - "chicago blackhawks"
+  leagues:
+    - "premier league"
+    - "bundesliga"
+    - "mls"
+    - "nfl"
+    - "mlb"
+  
+development:
+  <<: *default
+  

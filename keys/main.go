@@ -8,4 +8,6 @@ var (
 	LogLevel ContextKey = "log-level"
 	// SportsDB is the key to use for the sportsdb api
 	SportsDB ContextKey = "sports-db"
+	// AppConfig is the key to get the config
+	AppConfig ContextKey = "app-config"
 )
