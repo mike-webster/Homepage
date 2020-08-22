@@ -3,6 +3,7 @@ package log
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/mike-webster/homepage/keys"
 )
@@ -17,17 +18,20 @@ var (
 )
 
 func Log(ctx context.Context, payload map[string]interface{}, level string) {
-	ll := ctx.Value(keys.LogLevel)
-	if ll == nil {
-		return
+	k := ctx.Value(keys.LogLevel)
+	s := ctx.Value(string(keys.LogLevel))
+
+	ll := "debug"
+
+	if k == nil && s == nil {
+		fmt.Println("no log level in context, using default")
+	} else if s == nil {
+		ll = k.(string)
+	} else {
+		ll = s.(string)
 	}
 
-	strLL, ok := ll.(string)
-	if !ok {
-		return
-	}
-
-	switch strLL {
+	switch ll {
 	case LogLevelError:
 		if !(level == LogLevelError) {
 			return
@@ -39,5 +43,8 @@ func Log(ctx context.Context, payload map[string]interface{}, level string) {
 	case LogLevelDebug:
 	}
 
-	fmt.Println()
+	fmt.Println(">====\nTime: ", time.Now())
+	for k, v := range payload {
+		fmt.Printf("-- %v: \n\t%v\n", k, v)
+	}
 }

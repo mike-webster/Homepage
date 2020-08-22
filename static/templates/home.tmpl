@@ -8,7 +8,11 @@
             <div style="text-align:center;min-height: 480px;">
                 <h1>Homepage</h1>
                 <h4>Beta</h4>
-                <p>{{ .Teams }}</p>
+                {{ range .Events }}
+                    <div class="event">
+                        <p>{{ .Title }} @ {{ .GetTime }}</p>
+                    </div>
+                {{ end }}
             </div>
             <br />
         </div>

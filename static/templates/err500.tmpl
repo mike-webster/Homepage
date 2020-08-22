@@ -9,6 +9,9 @@
                 <h1>Homepage</h1>
                 <h4>Beta</h4>
                 <p>Something blew up... you should look into this</p>
+                {{ if .Error }}
+                    <p>{{ .Error }}</p>
+                {{ end }}
             </div>
             <br />
         </div>
