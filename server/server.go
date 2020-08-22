@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"homepage/data"
 	"homepage/env"
 	"homepage/log"
 
@@ -42,17 +43,24 @@ func runServer(ctx context.Context) {
 		}
 
 		type viewbag struct {
-			Teams   []string
-			Leagues []string
+			Events []data.Event
 		}
 
-		vb := viewbag{
-			Teams:   cfg.Teams,
-			Leagues: cfg.Leagues,
+		info := viewbag{}
+
+		for _, i := range cfg.Teams {
+			t, err := data.GetTeamByName(ctx, i)
+			if err != nil {
+				panic(err)
+			}
+			es, err := data.GetNext5Events(ctx, t.Name)
+			if err != nil {
+				panic(err)
+			}
+			info.Events = append(info.Events, *es...)
 		}
 
-		// LEFT OFF: this isn't working - showing an empty slice on the page
-		c.HTML(http.StatusOK, "home.tmpl", vb)
+		c.HTML(http.StatusOK, "home.tmpl", info)
 	})
 
 	r.Run(fmt.Sprintf("%v:%v", "127.0.0.1", cfg.Port))

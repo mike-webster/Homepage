@@ -26,6 +26,7 @@ func recovery(c *gin.Context) {
 				"event": "api_panic",
 				"stack": string(debug.Stack()),
 			}, "error")
+			c.HTML(500, "err500.tmpl", nil)
 		}
 	}()
 	c.Next()
