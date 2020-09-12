@@ -6,6 +6,7 @@ default: &default
     - "green bay packers"
     - "milwaukee bucks"
     - "chicago blackhawks"
+    - "chicago fire"
   leagues:
     - "premier league"
     - "bundesliga"
