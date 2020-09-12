@@ -10,7 +10,7 @@
                 <h4>Beta</h4>
                 {{ range .Events }}
                     <div class="event">
-                        <p>{{ .Title }} @ {{ .GetTime }}</p>
+                        <p {{if .IsToday}}style="background-color:darksalmon;"{{end}}>{{ .Title }} @ {{ .GetTime }}</p>
                     </div>
                 {{ end }}
             </div>

@@ -5,6 +5,12 @@ import (
 	"time"
 )
 
+var (
+	displayFormat = time.RFC1123
+	loadFormat    = "2006-01-02T15:04:05-0700"
+	localLocation = "America/Chicago"
+)
+
 // they server time looks to be -1 DT rn
 
 type Event struct {
@@ -14,17 +20,30 @@ type Event struct {
 	Time  string `json:"strTime"`
 }
 
-func (e Event) GetTime() string {
-	format := "2006-01-02T15:04:05-0700"
-	if len(e.Date) > 0 && len(e.Time) > 0 {
-		str := fmt.Sprint(e.Date, "T", e.Time, "-0100")
-		fmt.Println(str)
-		t, _ := time.Parse(format, str)
-		loc, _ := time.LoadLocation("America/Chicago")
-		return t.In(loc).Format(format)
+func (e Event) IsToday() bool {
+	loc, _ := time.LoadLocation(localLocation)
+	if time.Now().In(loc).YearDay() == getTime(e.Date, e.Time).YearDay() {
+		return true
 	}
 
-	return time.Time{}.Format(format)
+	return false
+}
+
+func getTime(date, ti string) time.Time {
+	if len(date) > 0 && len(ti) > 0 {
+		str := fmt.Sprint(date, "T", ti, "-0100")
+		fmt.Println(str)
+		t, _ := time.Parse(loadFormat, str)
+		loc, _ := time.LoadLocation(localLocation)
+		return t.In(loc)
+	}
+
+	return time.Time{}
+}
+
+func (e Event) GetTime() string {
+	t := getTime(e.Date, e.Time)
+	return t.Format(displayFormat)
 }
 
 type respEvents struct {
@@ -36,7 +55,9 @@ type Events []Event
 func (e Events) Len() int      { return len(e) }
 func (e Events) Swap(i, j int) { e[i], e[j] = e[j], e[i] }
 func (e Events) Less(i, j int) bool {
-	if e[i].Time <= e[j].Time {
+	ta := getTime(e[i].Date, e[i].Time)
+	tb := getTime(e[j].Date, e[j].Time)
+	if ta.Before(tb) {
 		return true
 	}
 
